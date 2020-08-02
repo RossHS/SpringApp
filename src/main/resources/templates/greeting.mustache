@@ -9,10 +9,12 @@
 
 <form action="/main">
     <button>Ввойти</button>
+    <input type="hidden" name="_csrf" value="{{_csrf.token}}">
 </form>
 
 <form action="/registration">
     <button>Зарегистрироваться</button>
+    <input type="hidden" name="_csrf" value="{{_csrf.token}}">
 </form>
 
 </body>
