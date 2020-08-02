@@ -3,7 +3,8 @@
     <label>Конвертер валют</label>
 
     <div>
-        <form action="/currencyConverter" method="get">
+        <form action="/main" method="get">
+            Сконвертировать из
             <div>
                 <label>
                     <select name="convertFrom">
@@ -11,10 +12,11 @@
                             <option value="${cur.id}">${cur.charCode} (${cur.name})</option>
                         </#list>
                     </select>
-                    <input name="value" type="number"/>
+                    <input name="value" type="text" value="${value!""}"/>
                 </label>
             </div>
 
+            В
             <div>
                 <label>
                     <select name="convertTo">
@@ -22,10 +24,12 @@
                             <option value="${cur.id}">${cur.charCode} (${cur.name})</option>
                         </#list>
                     </select>
+                    <input name="result" type="text" value="${result!""}"/>
                 </label>
             </div>
 
             <div><input type="submit" value="Конвертировать"/></div>
+            <div>${message!" "}</div>
         </form>
     </div>
 
