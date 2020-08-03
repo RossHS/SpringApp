@@ -1,6 +1,10 @@
 package com.khapilov.currency.converter.controllers;
 
+import com.khapilov.currency.converter.domain.History;
+import com.khapilov.currency.converter.repos.HistoryConverterRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -11,8 +15,14 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @Controller
 public class HistoryController {
+    @Autowired
+    private HistoryConverterRepo historyRepo;
+
     @GetMapping("/usage_history")
-    public String main() {
+    public String main(Model model) {
+        Iterable<History> histories = historyRepo.findAll();
+
+        model.addAttribute("histories", histories);
 
         return "usage_history";
     }
