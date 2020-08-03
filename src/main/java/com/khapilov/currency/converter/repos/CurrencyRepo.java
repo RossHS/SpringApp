@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CurrencyRepo extends JpaRepository<Currency, Integer> {
     Currency findByCharCode(String charCode);
+
+    Currency findByCbrId(String id);
 }

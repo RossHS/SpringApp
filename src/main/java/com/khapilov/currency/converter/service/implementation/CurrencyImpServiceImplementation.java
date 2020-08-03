@@ -163,6 +163,11 @@ public class CurrencyImpServiceImplementation implements CurrencyImpService {
     }
 
     private Currency saveCurrency(Element currencyNode) {
+        Currency currencySaved = currencyRepo.findByCbrId(currencyNode.getAttribute("ID"));
+        if (currencySaved != null) {
+            return currencySaved;
+        }
+
         Currency currency = new Currency();
         currency.setCbrId(currencyNode.getAttribute("ID"));
 
