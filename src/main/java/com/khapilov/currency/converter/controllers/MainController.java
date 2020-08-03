@@ -1,18 +1,24 @@
 package com.khapilov.currency.converter.controllers;
 
 import com.khapilov.currency.converter.domain.Currency;
+import com.khapilov.currency.converter.domain.History;
 import com.khapilov.currency.converter.domain.Rate;
+import com.khapilov.currency.converter.domain.User;
 import com.khapilov.currency.converter.repos.CurrencyRepo;
+import com.khapilov.currency.converter.repos.HistoryConverterRepo;
 import com.khapilov.currency.converter.repos.RateRepo;
 import com.khapilov.currency.converter.repos.UserRepo;
 import com.khapilov.currency.converter.service.CurrencyImpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -35,6 +41,9 @@ public class MainController {
     @Autowired
     private RateRepo rateRepo;
 
+    @Autowired
+    private HistoryConverterRepo historyConverterRepo;
+
     /**
      * Данный метод запускается при переходе на страницу с адресом /greeting.
      * т.е. обрабатываем GET запрос для /greeting
@@ -56,6 +65,7 @@ public class MainController {
     //Аналогично с выше сказанным, за тем исключением, что запускается при переходне на главную страницу
     @GetMapping("/main")
     public String main(
+            @AuthenticationPrincipal User user,
             @RequestParam(required = false) Currency convertFrom,
             @RequestParam(required = false) Currency convertTo,
             @RequestParam(required = false, defaultValue = "") String value,
@@ -70,6 +80,7 @@ public class MainController {
 
         if (value != null && !value.isEmpty()) {
             try {
+                value = value.replaceAll(",", ".");
                 double valueFrom = Double.parseDouble(value);
                 model.addAttribute("value", value);
 
@@ -80,6 +91,12 @@ public class MainController {
                         + convertFrom.getName() + " в "
                         + valueResult + ": "
                         + convertTo.getName());
+
+                if (user != null) {
+                    History history = new History(user, createDate().getTime(), valueFrom, valueResult, convertFrom, convertTo);
+                    historyConverterRepo.save(history);
+                }
+
             } catch (NumberFormatException e) {
                 model.addAttribute("message", "Введен неправильный формат цифр " + value);
                 e.printStackTrace();
@@ -87,6 +104,13 @@ public class MainController {
         }
 
         return "main";
+    }
+
+    private GregorianCalendar createDate() {
+        GregorianCalendar date = new GregorianCalendar();
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        format.setCalendar(date);
+        return date;
     }
 
     private double convert(Currency from, Currency to, double value) {
