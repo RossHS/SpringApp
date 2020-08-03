@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.SimpleDateFormat;
@@ -62,21 +63,14 @@ public class MainController {
         return "greeting";
     }
 
-    //Аналогично с выше сказанным, за тем исключением, что запускается при переходне на главную страницу
-    @GetMapping("/main")
-    public String main(
-            @AuthenticationPrincipal User user,
-            @RequestParam(required = false) Currency convertFrom,
-            @RequestParam(required = false) Currency convertTo,
-            @RequestParam(required = false, defaultValue = "") String value,
-            @RequestParam(required = false, defaultValue = "") String result,
-            Model model) {
+    @PostMapping("/main")
+    public String convert(@AuthenticationPrincipal User user,
+                          @RequestParam Currency convertFrom,
+                          @RequestParam Currency convertTo,
+                          @RequestParam String value,
+                          @RequestParam String result,
+                          Model model) {
 
-        currencyImpService.importCurrency();
-        List<Currency> currencies = currencyRepo.findAll(Sort.by("name"));
-
-
-        model.addAttribute("currencies", currencies);
 
         if (value != null && !value.isEmpty()) {
             try {
@@ -102,8 +96,27 @@ public class MainController {
                 e.printStackTrace();
             }
         }
-
+        updateAttributes(user, model);
         return "main";
+    }
+
+
+    //Аналогично с выше сказанным, за тем исключением, что запускается при переходне на главную страницу
+    @GetMapping("/main")
+    public String main(
+            @AuthenticationPrincipal User user,
+            Model model) {
+
+        updateAttributes(user, model);
+        return "main";
+    }
+
+    private void updateAttributes(User user, Model model) {
+        Iterable<History> histories = historyConverterRepo.findByUser(user);
+        currencyImpService.importCurrency();
+        List<Currency> currencies = currencyRepo.findAll(Sort.by("name"));
+        model.addAttribute("histories", histories);
+        model.addAttribute("currencies", currencies);
     }
 
     private GregorianCalendar createDate() {

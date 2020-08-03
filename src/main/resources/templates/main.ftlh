@@ -3,7 +3,7 @@
     <label>Конвертер валют</label>
 
     <div>
-        <form action="/main" method="get">
+        <form method="post">
             Сконвертировать из
             <div>
                 <label>
@@ -34,12 +34,32 @@
     </div>
 
     <div>
-        <form action="/usage_history">
-            <button>История</button>
-        </form>
         <form action="/logout" method="post">
             <input type="hidden" name="_csrf" value="${_csrf.token}">
             <input type="submit" value="Выйти"/>
         </form>
     </div>
+
+    <H2>История запросов</H2>
+    <table border="1">
+        <tr>
+            <th>Исходная валюта</th>
+            <th>Целевая валюта</th>
+            <th>Исходная сумма</th>
+            <th>Получаемая сумма</th>
+            <th>Дата</th>
+        </tr>
+
+        <#list histories as history>
+            <tr>
+                <td>${history.fromCurrency.name}</td>
+                <td>${history.toCurrency.name}</td>
+                <td>${history.valueFrom}</td>
+                <td>${history.valueTo}</td>
+                <td>${history.date?date}</td>
+            </tr>
+        <#else >
+            История запросов отсутсвует
+        </#list>
+    </table>
 </@C.page>

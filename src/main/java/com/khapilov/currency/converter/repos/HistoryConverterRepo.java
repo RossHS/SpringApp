@@ -1,8 +1,11 @@
 package com.khapilov.currency.converter.repos;
 
 import com.khapilov.currency.converter.domain.History;
+import com.khapilov.currency.converter.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author Ross Khapilov
@@ -10,5 +13,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface HistoryConverterRepo extends JpaRepository<History, Integer> {
-
+    List<History> findByUser(User user);
 }
