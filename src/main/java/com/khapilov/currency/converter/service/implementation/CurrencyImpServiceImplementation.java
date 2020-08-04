@@ -6,6 +6,7 @@ import com.khapilov.currency.converter.repos.CurrencyRepo;
 import com.khapilov.currency.converter.repos.RateRepo;
 import com.khapilov.currency.converter.service.CurrencyImpService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -27,7 +28,8 @@ import java.util.Map;
  */
 @Service
 public class CurrencyImpServiceImplementation implements CurrencyImpService {
-    final private static String CURRENCY_DATA_URL = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=";
+    @Value(value = "${cbr.url:http://www.cbr.ru/scripts/XML_daily.asp?date_req=}")
+    private String currencyDataUrl;
 
     private RateRepo rateRepo;
     private CurrencyRepo currencyRepo;
@@ -56,7 +58,7 @@ public class CurrencyImpServiceImplementation implements CurrencyImpService {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         format.setCalendar(date);
         String dateString = format.format(date.getTime());
-        String currencyUrl = CURRENCY_DATA_URL + dateString;
+        String currencyUrl = currencyDataUrl + dateString;
 
         NodeList currencyNodes = getCurrencyNodes(currencyUrl);
         for (int i = 0; i < currencyNodes.getLength(); i++) {
