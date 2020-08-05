@@ -4,11 +4,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Set;
 
 /**
  * Entity- это сущность, которую необходимо сохранять в базе данных
+ *
  * @author Ross Khapilov
  * @version 1.0 01.08.2020
  */
@@ -19,8 +21,12 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotNull
     private String username;
+
+    @NotNull
     private String password;
+
     private boolean active;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
